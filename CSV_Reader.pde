@@ -1,10 +1,10 @@
 /*  CSV_READER
  Version 4.0.0
- 
+
  Improvements from last version:
  - Completely rebuilt from the ground up to properly use classes, objects and methods.
    Significantly longer but now also significantly more easy to understand and modify.
- 
+
  Potential improvements:
  - Spin motor up to speed
  - Need to get current speed data back from motor
@@ -14,19 +14,19 @@
  - Add error-checking if wrong file type or data can otherwise not be read
  - (When availible) Accept error signal from ECU and stop motor
  - Better capability to program an endurance run
- 
+
  Currently working on:
- - 
+ -
  
  Notes:
  - Error messages are set to always true
- 
+
  */
 
 import processing.serial.*;
 
 Serial port; //The serial port of the Arduino connection
-RPMTable rpmProfile; 
+RPMTable rpmProfile;
 RunState runState = new RunState();
 
 Text chooseEngine, speedoTimeValue, speedoTimeText, manualRPMValue, manualRPMText, runFinished, timeRunningValue, timeRunningText;
@@ -54,7 +54,7 @@ void setup()
   size(720, 360, P2D);
   background(50);
 
-  selectInput("Select a file to process:", "fileSelected"); 
+  selectInput("Select a file to process:", "fileSelected");
   //opens a system-specific file viewer to choose data
 
   //println(Serial.list()); // List COM-ports
@@ -62,8 +62,8 @@ void setup()
   //ensure baud rate is same as on Arduino!
   update(0);  //Ensures motor speed is set to 0 at program start.
 
-  
-  
+
+
   //Creates all objects
   chooseEngine = new Text("Choose an engine: ", 120, 120);
   p91 = new Button("P91", 'y', 120, 160, 50, 20, true);
@@ -84,15 +84,15 @@ void setup()
   manualAuto = new Button("MANUAL", 'o', 300, 320, 60, 20, true);
 
   manualSlider = new Slider(400, 60, 50, 240);
-  
+
   timeRunningValue = new Text("0:00:00", 30, 320);
   timeRunningText = new Text("time", 30, 330);
 
   runFinished = new Text("Run finished.", 150, 150);
 
   engineSelectionScreen = new Text[] {chooseEngine, p91};
-  runningScreen = new Text[] {speedo, speedoTimeText, speedoTimeValue, manualRPMValue, manualRPMText, 
-    waterTempError, oilTempError, waterPressureError, oilLevelError, manualSlider, 
+  runningScreen = new Text[] {speedo, speedoTimeText, speedoTimeValue, manualRPMValue, manualRPMText,
+    waterTempError, oilTempError, waterPressureError, oilLevelError, manualSlider,
     startPause, stop, manualAuto, timeRunningValue, timeRunningText};
   stopScreen = new Text[] {runFinished};
 }
@@ -103,10 +103,10 @@ void setup()
 ////////////////////////////////////////////////////////////////////////////////
 void fileSelected(File selection) //selects the file
 {
-  if (selection == null) 
+  if (selection == null)
   {
     println("Window was closed or the user hit cancel.");
-  } else 
+  } else
   {
     println("User selected " + selection.getAbsolutePath());
     rpmProfile = new RPMTable(selection);
@@ -218,14 +218,14 @@ void draw()
   {
     runState.stop();
   }
-  
+
   timeRunning = runState.manualTimer.currentTime() + runState.autoTimer.currentTime() + runState.pauseTimer.currentTime();
   int seconds = (timeRunning/1000) % 60;
   int minutes = ((timeRunning/1000)/60) % 60;
   int hours = (((timeRunning/1000)/60)/60) % 60;
   timeRunningValue.changeText(hours + ":" + minutes + ":" + seconds);
 
-  //println(runState.pauseTimer.currentTime() + "\t" + runState.autoTimer.currentTime() + "\t" 
+  //println(runState.pauseTimer.currentTime() + "\t" + runState.autoTimer.currentTime() + "\t"
   //  + runState.manualTimer.currentTime());
 }
 
