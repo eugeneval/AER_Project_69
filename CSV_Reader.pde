@@ -17,7 +17,7 @@
 
  Currently working on:
  -
- 
+
  Notes:
  - Error messages are set to always true
 
@@ -29,16 +29,35 @@ Serial port; //The serial port of the Arduino connection
 RPMTable rpmProfile;
 RunState runState = new RunState();
 
-Text chooseEngine, speedoTimeValue, speedoTimeText, manualRPMValue, manualRPMText, runFinished, timeRunningValue, timeRunningText;
-Button waterTempError, oilTempError, waterPressureError, oilLevelError;
-Button startPause, stop, manualAuto;
-Button p91;
-Dial speedo;
-Slider manualSlider;
+//engineSelectionScreen
+Text chooseEngine = new Text("Choose an engine: ", 120, 120);
+Button p91 = new Button("P91", 'y', 120, 160, 50, 20, true);
 
-Text[] engineSelectionScreen;
-Text[] runningScreen;
-Text[] stopScreen;
+//runningScreen
+Dial speedo = new Dial("rpm", new int[] {0, 191, 255}, 180, 180, 180, 180);
+Text speedoTimeValue = new Text("0.00", 25, 230);
+Text speedoTimeText = new Text("time (s)", 30, 240);
+Text manualRPMValue = new Text("0", 400, 320);
+Text manualRPMText = new Text("rpm", 400, 330);
+Button waterTempError = new Button("WATER TEMP", 'g', 500, 60, 120, 20, false);
+Button oilTempError = new Button("OIL TEMP", 'g', 500, 90, 120, 20, false);
+Button waterPressureError = new Button("WATER PRESSURE", 'g', 500, 120, 120, 20, false);
+Button oilLevelError = new Button ("OIL LEVEL", 'g', 500, 150, 120, 20, false);
+Button startPause = new Button("START", 'g', 160, 320, 50, 20, true);
+Button stop = new Button("STOP", 'r', 230, 320, 50, 20, true);
+Button manualAuto = new Button("MANUAL", 'o', 300, 320, 60, 20, true);
+Slider manualSlider = new Slider(400, 60, 50, 240);
+Text timeRunningValue = new Text("0:00:00", 30, 320);
+Text timeRunningText = new Text("time", 30, 330);
+
+//stopScreen
+Text runFinished = new Text("Run finished.", 150, 150);
+
+Text[] engineSelectionScreen = new Text[] {chooseEngine, p91};
+Text[] runningScreen = new Text[] {speedo, speedoTimeText, speedoTimeValue, manualRPMValue, manualRPMText,
+  waterTempError, oilTempError, waterPressureError, oilLevelError, manualSlider,
+  startPause, stop, manualAuto, timeRunningValue, timeRunningText};
+Text[] stopScreen = new Text[] {runFinished};
 
 int pulleyRatio;
 int manualRPM;
@@ -62,39 +81,6 @@ void setup()
   //ensure baud rate is same as on Arduino!
   update(0);  //Ensures motor speed is set to 0 at program start.
 
-
-
-  //Creates all objects
-  chooseEngine = new Text("Choose an engine: ", 120, 120);
-  p91 = new Button("P91", 'y', 120, 160, 50, 20, true);
-
-  speedo = new Dial("rpm", new int[] {0, 191, 255}, 180, 180, 180, 180);
-  speedoTimeValue = new Text("0.00", 25, 230);
-  speedoTimeText = new Text("time (s)", 30, 240);
-  manualRPMValue = new Text("0", 400, 320);
-  manualRPMText = new Text("rpm", 400, 330);
-
-  waterTempError = new Button("WATER TEMP", 'g', 500, 60, 120, 20, false);
-  oilTempError = new Button("OIL TEMP", 'g', 500, 90, 120, 20, false);
-  waterPressureError = new Button("WATER PRESSURE", 'g', 500, 120, 120, 20, false);
-  oilLevelError = new Button ("OIL LEVEL", 'g', 500, 150, 120, 20, false);
-
-  startPause = new Button("START", 'g', 160, 320, 50, 20, true);
-  stop = new Button("STOP", 'r', 230, 320, 50, 20, true);
-  manualAuto = new Button("MANUAL", 'o', 300, 320, 60, 20, true);
-
-  manualSlider = new Slider(400, 60, 50, 240);
-
-  timeRunningValue = new Text("0:00:00", 30, 320);
-  timeRunningText = new Text("time", 30, 330);
-
-  runFinished = new Text("Run finished.", 150, 150);
-
-  engineSelectionScreen = new Text[] {chooseEngine, p91};
-  runningScreen = new Text[] {speedo, speedoTimeText, speedoTimeValue, manualRPMValue, manualRPMText,
-    waterTempError, oilTempError, waterPressureError, oilLevelError, manualSlider,
-    startPause, stop, manualAuto, timeRunningValue, timeRunningText};
-  stopScreen = new Text[] {runFinished};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
