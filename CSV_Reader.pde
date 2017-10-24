@@ -53,6 +53,7 @@ Text timeRunningText = new Text("time", 30, 330);
 //stopScreen
 Text runFinished = new Text("Run finished.", 150, 150);
 
+//Collects them into arrays
 Text[] engineSelectionScreen = new Text[] {chooseEngine, p91};
 Text[] runningScreen = new Text[] {speedo, speedoTimeText, speedoTimeValue, manualRPMValue, manualRPMText,
   waterTempError, oilTempError, waterPressureError, oilLevelError, manualSlider,
@@ -119,7 +120,7 @@ void draw()
   runMethodOnTextArray(stopScreen, "refresh");
 
   //    ////////////////////////////////////////////
-  switch(runState.getRunState()) //Only shows engine selection interface until engine is selected
+  switch(runState.getRunState()) //Works depending on the current runstate.
   {
 
     //  ENGINE SELECTION  ////////////////////////////////////////////
@@ -173,6 +174,7 @@ void draw()
       manualAuto.changeColour('o');
     }
     break;
+
     //  AUTO ////////////////////////////////////////////
   case "auto":
     if (isPressed(startPause))
@@ -256,8 +258,10 @@ void update(int speed) //updates output to arduino
   //println(v); //testing
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////
+//  RUN METHOD ON TEXT ARRAY
+//  Runs the chosen method on an array of the custom class Text
+////////////////////////////////////////////////////////////////////////////////
 private void runMethodOnTextArray(Text[] array, String method)
 {
   for (int i = 0; i < array.length; i++)
