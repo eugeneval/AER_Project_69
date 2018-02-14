@@ -1,0 +1,76 @@
+from Tkinter import *
+from tkFileDialog import askopenfilename
+import timeit, time
+
+from csv_reader import CSV_Reader
+
+root = Tk()
+
+class Application(Frame):
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.root = master
+        self.rpm = IntVar()
+
+        self.createWidgets()
+
+    def createWidgets(self):
+        self.menu = Menu(self.root)
+        self.root.config(menu=self.menu)
+
+        self.filemenu = Menu(self.menu)
+        self.menu.add_cascade(label="Profile", menu=self.filemenu)
+        self.filemenu.add_command(label="Load RPM Profile", command=self.loadCSV)
+
+
+        self.menu.add_cascade(label="Arduino", menu=self.filemenu)
+
+        self.tachometer_canvas = Canvas(self.root, width=200, height=200)
+        self.tachometer = self.tachometer_canvas.create_arc(10, 10, 190, 190, style=ARC, start=180, width=5, extent=0)
+        self.tachometer_canvas.grid(row=0, column=0)
+
+
+        self.slider = Scale(self.root, from_=8640, to=0, length=200, variable=self.rpm, command=self.change_rpm)
+        self.slider.grid(row=0, column=1)
+
+        self.tachometer_label_1 = Label(self.master, textvariable=self.rpm).grid(row=1, column=0)
+        self.tachometer_label_2 = Label(self.master, text="RPM").grid(row=2, column=0)
+
+        self.stop = Button(self.root, text="STOP", command=self.stop, bg="red")
+        self.stop.grid(row=3, column=2)
+
+
+
+    def start(self):
+        self.profile.timer.start()
+        self.update_callback_id = self.master.after(5, self.update)
+
+    def update(self):
+        self.change_rpm(self.profile.getRPM())
+        self.update_callback_id = self.master.after(5, self.update)
+
+    def stop(self):
+        if hasattr(self, 'update_callback_id'):
+            self.after_cancel(self.update_callback_id)
+            self.profile.timer.stop()
+        self.change_rpm(0)
+
+    def change_rpm(self, rpm):
+        self.rpm.set(rpm)
+        start = 180-self.rpm.get()*0.025
+        end = self.rpm.get()*0.025
+        self.tachometer_canvas.itemconfig(self.tachometer, start=start, extent=end)
+
+    def loadCSV(self):
+        csv_file = askopenfilename()
+        self.profile = CSV_Reader(csv_file)
+
+        self.start = Button(self.root, text="START", bg="green", command=self.start)
+        self.start.grid(row=3, column=0)
+
+
+
+if __name__ == "__main__":
+
+    app = Application(master=root)
+    app.mainloop()
