@@ -3,6 +3,7 @@ from tkFileDialog import askopenfilename
 import timeit, time
 
 from csv_reader import CSV_Reader
+import arduino_controller
 
 root = Tk()
 
@@ -18,12 +19,17 @@ class Application(Frame):
         self.menu = Menu(self.root)
         self.root.config(menu=self.menu)
 
-        self.filemenu = Menu(self.menu)
-        self.menu.add_cascade(label="Profile", menu=self.filemenu)
-        self.filemenu.add_command(label="Load RPM Profile", command=self.loadCSV)
+        self.profilemenu = Menu(self.menu)
+        self.menu.add_cascade(label="Profile", menu=self.profilemenu)
+        self.profilemenu.add_command(label="Load RPM Profile", command=self.loadCSV)
 
+        self.arduinomenu = Menu(self.menu)
+        self.menu.add_cascade(label="Arduino", menu=self.arduinomenu)
+        self.connectmenu = Menu(self.menu)
+        self.arduinomenu.add_cascade(label="Connect", menu=self.connectmenu)
+        for port in arduino_controller.return_serial_ports():
+            self.connectmenu.add_command(label=port, command=lambda p=str(port): self.connect(p))
 
-        self.menu.add_cascade(label="Arduino", menu=self.filemenu)
 
         self.tachometer_canvas = Canvas(self.root, width=200, height=200)
         self.tachometer = self.tachometer_canvas.create_arc(10, 10, 190, 190, style=ARC, start=180, width=5, extent=0)
@@ -57,6 +63,7 @@ class Application(Frame):
 
     def change_rpm(self, rpm):
         self.rpm.set(rpm)
+        self.sendRPM(rpm)
         start = 180-self.rpm.get()*0.025
         end = self.rpm.get()*0.025
         self.tachometer_canvas.itemconfig(self.tachometer, start=start, extent=end)
@@ -68,7 +75,13 @@ class Application(Frame):
         self.start = Button(self.root, text="START", bg="green", command=self.start)
         self.start.grid(row=3, column=0)
 
+    def connect(self, port):
+        self.arduino = arduino_controller.connect(port)
 
+    def sendRPM(self, rpm):
+        print ">>>Sending: %s" %(str(float(rpm)*0.474))
+        self.arduino.write(str(int(float(rpm)*0.474)))
+        self.arduino.write("n")
 
 if __name__ == "__main__":
 
