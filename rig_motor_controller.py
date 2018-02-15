@@ -79,7 +79,6 @@ class Application(Frame):
         self.arduino = arduino_controller.connect(port)
 
     def sendRPM(self, rpm):
-        print ">>>Sending: %s" %(str(float(rpm)*0.474))
         self.arduino.write(str(int(float(rpm)*0.474)))
         self.arduino.write("n")
 
