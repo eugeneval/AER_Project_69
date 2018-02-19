@@ -30,21 +30,20 @@ class Application(Frame):
         for port in arduino_controller.return_serial_ports():
             self.connectmenu.add_command(label=port, command=lambda p=str(port): self.connect(p))
 
-        self.arduino_connected_label = Label(self.master, text="ARDUINO NOT CONNECTED", fg='red')
-        self.arduino_connected_label.grid(column=0, row=0)
 
         self.tachometer_canvas = Canvas(self.root, width=200, height=200)
         self.tachometer = self.tachometer_canvas.create_arc(10, 10, 190, 190, style=ARC, start=180, width=5, extent=0)
-        self.tachometer_canvas.grid(row=1, column=0)
+        self.tachometer_canvas.grid(row=0, column=0)
+
 
         self.slider = Scale(self.root, from_=8640, to=0, length=200, variable=self.rpm, command=self.change_rpm)
-        self.slider.grid(row=1, column=1)
+        self.slider.grid(row=0, column=1)
 
-        self.tachometer_label_1 = Label(self.master, textvariable=self.rpm).grid(row=2, column=0)
-        self.tachometer_label_2 = Label(self.master, text="RPM").grid(row=3, column=0)
+        self.tachometer_label_1 = Label(self.master, textvariable=self.rpm).grid(row=1, column=0)
+        self.tachometer_label_2 = Label(self.master, text="RPM").grid(row=2, column=0)
 
         self.stop = Button(self.root, text="STOP", command=self.stop, bg="red")
-        self.stop.grid(row=4, column=2)
+        self.stop.grid(row=3, column=2)
 
 
 
@@ -78,14 +77,10 @@ class Application(Frame):
 
     def connect(self, port):
         self.arduino = arduino_controller.connect(port)
-        if hasattr(self, 'arduino'):
-            self.arduino_connected_label.config(text="ARDUINO CONNECTED", fg='green')
-
 
     def sendRPM(self, rpm):
-        if hasattr(self, 'arduino'):
-            self.arduino.write(str(int(float(rpm)*0.474)))
-            self.arduino.write("n")
+        self.arduino.write(str(int(float(rpm)*0.474)))
+        self.arduino.write("n")
 
 if __name__ == "__main__":
 
